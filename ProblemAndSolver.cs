@@ -322,6 +322,8 @@ namespace TSP
 				Tuple<City,City,City> KeyVertexes = 
 					GetThreeCities(RatingsRandom);
 				City[] SubCycle = GetSubCycle(KeyVertexes);
+                if (SubCycle == null)
+                    continue;
 				RateSubCycle(Ratings, SubCycle);
 			}
 			timer.Stop();
