@@ -282,7 +282,8 @@ namespace TSP
 		
 		private const int NUM_MILLISECONDS_TO_RATE = 29500; 
 
-		void RateSubCycle (IDictionary<Tuple<City, City>, double> Ratings, City[] SubCycle)
+		void RateSubCycle (IDictionary<Tuple<City, City>, double> Ratings, 
+                City[] SubCycle)
 		{
 			double SubCycleRate = 
 				((double) SubCycle.Count) / ((double) Cities.Count);
@@ -303,11 +304,11 @@ namespace TSP
 			}
 		}
 		
-		// <summary>
-		// for as long as NUM_SECONDS_TO_RATE, randomly samples the graph for sub-cycles
-		// and uses them to accumulate ratings of edges between the cities.
-		// </summary>
-		// NOTE: 
+		/// <summary>
+		/// for as long as NUM_SECONDS_TO_RATE, randomly samples the graph for 
+        /// sub-cycles and uses them to accumulate ratings of edges between the 
+        /// cities.
+		/// </summary>
 		public IDictionary<Tuple<City, City>,double> RateEdges ()
 		{
 			Random RatingsRandom = new Random();
@@ -365,19 +366,15 @@ namespace TSP
 			throw new NotImplementedException ();
 		}
 		
-		
-		
         /// <summary>
-        ///  solve the problem.  This is the entry point for the solver when the run button is clicked
+        ///  solve the problem.  This is the entry point for the solver when 
+        ///  the run button is clicked
         /// right now it just picks a simple solution. 
         /// </summary>
         public void solveProblem()
         {
         	IDictionary<Tuple<City,City>,double> EdgeRatings = RateEdges();
 			Route = FindRoute(EdgeRatings);
-			
-			Route = new ArrayList(); 
-			// call this the best solution so far.  bssf is the route that will be drawn by the Draw method. 
             bssf = new TSPSolution(Route);
             // update the cost of the tour. 
             Program.MainForm.tbCostOfTour.Text = " " + bssf.costOfRoute();
