@@ -279,21 +279,105 @@ namespace TSP
             else
                 return -1D; 
         }
+		
+		private const int NUM_MILLISECONDS_TO_RATE = 29500; 
 
+		void RateSubCycle (IDictionary<Tuple<City, City>, double> Ratings, City[] SubCycle)
+		{
+			double SubCycleRate = 
+				((double) SubCycle.Count) / ((double) Cities.Count);
+			for (int i = 0; i < SubCycle.Count - 1; i++)
+			{
+				Tuple<City,City> CurrentEdge = 
+					new Tuple<City, City>(SubCycle[i],SubCycle[i+1]);
+				double CurrentRating;
+				if (Ratings.TryGetValue(CurrentEdge, out CurrentRating))
+				{
+					Ratings.Remove(CurrentEdge);
+					Ratings.Add(CurrentEdge,CurrentRating + SubCycleRate);
+				}
+				else
+				{
+					Ratings.Add(CurrentEdge,SubCycleRate);
+				}
+			}
+		}
+		
+		// <summary>
+		// for as long as NUM_SECONDS_TO_RATE, randomly samples the graph for sub-cycles
+		// and uses them to accumulate ratings of edges between the cities.
+		// </summary>
+		// NOTE: 
+		public IDictionary<Tuple<City, City>,double> RateEdges ()
+		{
+			Random RatingsRandom = new Random();
+			System.Diagnostics.Stopwatch timer = 
+				new System.Diagnostics.Stopwatch();
+			timer.Start();
+			IDictionary<Tuple<City,City>,double> Ratings =
+				new Dictionary<Tuple<City,City>,double>();
+			while (timer.ElapsedMilliseconds < NUM_MILLISECONDS_TO_RATE)
+			{
+				Tuple<City,City,City> KeyVertexes = 
+					GetThreeCities(RatingsRandom);
+				City[] SubCycle = GetSubCycle(KeyVertexes);
+				RateSubCycle(Ratings, SubCycle);
+			}
+			timer.Stop();
+			return Ratings;
+		}
+		
+		/// <summary>
+		/// Gets the SubCycle passing through the three provided cities using
+		/// Djikstra's Algorithm (it is assumed that all edge lengths are 
+		/// non-negative).
+		/// </summary>
+		/// <returns>
+		/// a list of cities in the sub-cycle, in order of their appearance 
+		/// in the cycle.
+		/// </returns>
+		/// 
+		// NOTE: The actual graph is caputured by the private City[] array 
+		// known as Cities. The City class has a method named
+		// costToGetTo, which when provided with a city, will either return
+		// the cost to get to the city (if an edge between them exists), or 
+		// Double.PositiveInfinity if no such edge exists.
+
+		public City[] GetSubCycle (Tuple<City, City, City> keyVertexes)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		// <summary>
+		// given the graph of the cities, and the edge ratings,
+		// greedily find the first rudrata cycle, sorting the edges by 
+		// rating and then trying the first one possible.
+		// </summary>
+		// NOTE: The actual graph is caputured by the private City[] array 
+		// known as Cities. The City class has a method named
+		// costToGetTo, which when provided with a city, will either return
+		// the cost to get to the city (if an edge between them exists), or 
+		// Double.PositiveInfinity if no such edge exists.
+
+		public ArrayList FindRoute (
+				IDictionary<Tuple<City, City>,double> EdgeRatings)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		
+		
         /// <summary>
         ///  solve the problem.  This is the entry point for the solver when the run button is clicked
         /// right now it just picks a simple solution. 
         /// </summary>
         public void solveProblem()
         {
-            int x;
-            Route = new ArrayList(); 
-            // this is the trivial solution. 
-            for (x = 0; x < Cities.Length; x++)
-            {
-                Route.Add( Cities[Cities.Length - x -1]);
-            }
-            // call this the best solution so far.  bssf is the route that will be drawn by the Draw method. 
+        	IDictionary<Tuple<City,City>,double> EdgeRatings = RateEdges();
+			Route = FindRoute(EdgeRatings);
+			
+			Route = new ArrayList(); 
+			// call this the best solution so far.  bssf is the route that will be drawn by the Draw method. 
             bssf = new TSPSolution(Route);
             // update the cost of the tour. 
             Program.MainForm.tbCostOfTour.Text = " " + bssf.costOfRoute();
